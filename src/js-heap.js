@@ -1,5 +1,4 @@
-function buildMinHeap() {
-    "use strict";
+function buildHeap(fnMap = v => v) {
     const values = [];
 
     function getIndexOfParent(childIndex) {
@@ -25,7 +24,7 @@ function buildMinHeap() {
             let parentIndex = getIndexOfParent(n),
                 parent = values[parentIndex];
 
-            if (parent <= value) {
+            if (fnMap(parent) <= fnMap(value)) {
                 break;
             }
             swap(parentIndex, n);
@@ -37,7 +36,8 @@ function buildMinHeap() {
         const value = values[n];
 
         while(true) {
-            const indexOfChildToSwap = getIndexesOfChildren(n).reduce((smallestSoFar,i) => smallestSoFar[1] < values[i] ? smallestSoFar : [i, values[i]], [null, value])[0];
+            const indexOfChildToSwap = getIndexesOfChildren(n)
+                .reduce((smallestSoFar,i) => fnMap(smallestSoFar[1]) < fnMap(values[i]) ? smallestSoFar : [i, values[i]], [null, value])[0];
 
             if (indexOfChildToSwap === null) {
                 break;
@@ -52,10 +52,10 @@ function buildMinHeap() {
             values.push(value);
             bubbleUp(values.length - 1);
         },
-        getMin() {
+        peek() {
             return values[0]; // 'undefined' if array is empty
         },
-        extractMin() {
+        extract() {
             const minValue = values.shift();
 
             if (values.length) {

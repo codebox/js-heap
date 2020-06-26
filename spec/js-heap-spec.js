@@ -3,43 +3,43 @@ describe("Heap", () => {
     let heap;
 
     beforeEach(() => {
-        heap = buildMinHeap();
+        heap = buildHeap();
     });
 
-    describe("getMin()", () => {
+    describe("peek()", () => {
         it("should return 'undefined' if heap is empty", function() {
-            expect(heap.getMin()).toBeUndefined();
-            expect(heap.getMin()).toBeUndefined(); // idempotency check
+            expect(heap.peek()).toBeUndefined();
+            expect(heap.peek()).toBeUndefined(); // idempotency check
         });
 
         it("should return value if heap has only 1 item", function() {
             const VALUE = 123;
             heap.insert(VALUE);
-            expect(heap.getMin()).toBe(VALUE);
-            expect(heap.getMin()).toBe(VALUE); // idempotency check
+            expect(heap.peek()).toBe(VALUE);
+            expect(heap.peek()).toBe(VALUE); // idempotency check
         });
 
         it("should return value if heap has only 2 items", function() {
             heap.insert(2);
             heap.insert(1);
-            expect(heap.getMin()).toBe(1);
-            expect(heap.getMin()).toBe(1); // idempotency check
+            expect(heap.peek()).toBe(1);
+            expect(heap.peek()).toBe(1); // idempotency check
         });
     });
 
-    describe("extractMin()", () => {
+    describe("extract()", () => {
         function testExtractionOrder(...values) {
             values.forEach(heap.insert);
             values.sort();
             values.forEach(value => {
-                expect(heap.extractMin()).toBe(value);
+                expect(heap.extract()).toBe(value);
             });
-            expect(heap.extractMin()).toBeUndefined();
+            expect(heap.extract()).toBeUndefined();
         }
 
         it("should return 'undefined' if heap is empty", function() {
-            expect(heap.extractMin()).toBeUndefined();
-            expect(heap.extractMin()).toBeUndefined();
+            expect(heap.extract()).toBeUndefined();
+            expect(heap.extract()).toBeUndefined();
         });
 
         it("should return values in correct sequence if heap has only 1 item", function() {
@@ -66,19 +66,44 @@ describe("Heap", () => {
             heap.insert(3);
             heap.insert(1);
             heap.insert(2);
-            expect(heap.extractMin()).toBe(1);
-            expect(heap.extractMin()).toBe(2);
+            expect(heap.extract()).toBe(1);
+            expect(heap.extract()).toBe(2);
             heap.insert(1);
-            expect(heap.extractMin()).toBe(1);
+            expect(heap.extract()).toBe(1);
             heap.insert(4);
-            expect(heap.extractMin()).toBe(3);
-            expect(heap.extractMin()).toBe(4);
+            expect(heap.extract()).toBe(3);
+            expect(heap.extract()).toBe(4);
             heap.insert(1);
-            expect(heap.extractMin()).toBe(1);
-            expect(heap.extractMin()).toBeUndefined();
+            expect(heap.extract()).toBe(1);
+            expect(heap.extract()).toBeUndefined();
             heap.insert(4);
-            expect(heap.extractMin()).toBe(4);
-            expect(heap.extractMin()).toBeUndefined();
+            expect(heap.extract()).toBe(4);
+            expect(heap.extract()).toBeUndefined();
+        });
+    });
+
+    describe("mapping function", () => {
+        it("should create max-heap correctly", () => {
+            const maxHeap = buildHeap(v => -v);
+            maxHeap.insert(1);
+            maxHeap.insert(2);
+            maxHeap.insert(3);
+            expect(maxHeap.peek()).toBe(3);
+            expect(maxHeap.extract()).toBe(3);
+            expect(maxHeap.extract()).toBe(2);
+            expect(maxHeap.extract()).toBe(1);
+            expect(maxHeap.extract()).toBeUndefined();
+        });
+        it("should allow object property values to be used for comparison", () => {
+            const maxHeap = buildHeap(v => v.x);
+            maxHeap.insert({x:1});
+            maxHeap.insert({x:2});
+            maxHeap.insert({x:3});
+            expect(maxHeap.peek()).toEqual({x:1});
+            expect(maxHeap.extract()).toEqual({x:1});
+            expect(maxHeap.extract()).toEqual({x:2});
+            expect(maxHeap.extract()).toEqual({x:3});
+            expect(maxHeap.extract()).toBeUndefined();
         });
 
     });
